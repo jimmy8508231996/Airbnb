@@ -63,6 +63,7 @@ LA$Downtown_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Downto
 LA$SantaMonica_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Santa Monica",1,0)) 
 LA$entirehouse <- as.factor(ifelse(LA$Room_type=="Entire home/apt",1,0)) 
 LA$privateroom <- as.factor(ifelse(LA$Room_type=="Private room",1,0)) 
-
+LA$Recent_Review <-as.factor(ifelse(is.na(LA$Last_Review_Date),as.Date("2020-12-31")-as.Date("2017-04-30"),as.Date("2020-12-31")-LA$Last_Review_Date))
+#use the median of the last_review date(2017-04-30)
 
 summary(LA)
