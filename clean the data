@@ -67,3 +67,9 @@ LA$Recent_Review <-as.factor(ifelse(is.na(LA$Last_Review_Date),as.Date("2020-12-
 #use the median of the last_review date(2017-04-30)
 
 summary(LA)
+
+LA_sample<-LA[,c("Host_Response_Rate","Host_Is_Superhost","Host_total_listings_count","Accommodates","Bathrooms","Bedrooms","Price","Minimum_nights","Availability_365",
+                   "Number_of_reviews","Review_Scores_Rating","Review_Scores_Accuracy",
+                   "Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location",
+                   "Review_Scores_Value","Reviews_per_month","Is_Apartment","Is_House","Hollywood_Neighbourhood","Venice_Neighbourhood","LongBeach_Neighbourhood","Downtown_Neighbourhood","SantaMonica_Neighbourhood","entirehouse","privateroom","Recent_Review")]
+
