@@ -5,27 +5,25 @@ library(tidyverse)
 LA <- read_csv("LA_Listings.csv")
 summary(LA)
 
+#transfer variables to factors
 LA$Street <- as.factor(LA$Street)
 LA$City <- as.factor(LA$City)
 LA$Amenities <-as.factor(LA$Amenities)
-
 LA$Property_type<- as.factor(LA$Property_type)
 LA$Room_type<- as.factor(LA$Room_type)
 LA$Country<- as.factor(LA$Country)
 LA$State<- as.factor(LA$State)
 LA$Neighbourhood_cleansed<- as.factor(LA$Neighbourhood_cleansed)
 #format the date
-LA$date_last_scraped<-mdy(LA$Calendar_last_scraped)
+LA$Calendar_last_scraped<-mdy(LA$Calendar_last_scraped)
 LA$Last_Review_Date <-mdy(LA$Last_Review_Date)
 
+summary(LA)
+
 #Dummy coded
-LA$Host_Is_Superhost <- as.factor(ifelse(LA$Host_Is_Superhost == "TRUE", 1,0))
+LA$Host_Is_Superhost <- as.factor(ifelse(LA$Host_Is_Superhost == "TRUE", 1,0)) 
 
-
-#categorize the state
-LA$State <- as.factor(ifelse(LA$State == "ca"|LA$State == "Ca", "CA","CA"))  
-
-#transfer NA into mean/mode of the variables
+#transfer NA into mean/median of the variables
 LA$Host_Response_Rate <- ifelse(is.na(LA$Host_Response_Rate), mean(LA$Host_Response_Rate,na.rm=TRUE),LA$Host_Response_Rate)
 LA$Host_total_listings_count <- ifelse(is.na(LA$Host_total_listings_count), median(LA$Host_total_listings_count,na.rm=TRUE),LA$Host_total_listings_count)
 LA$Accommodates <-ifelse(is.na(LA$Accommodates), median(LA$Accommodates,na.rm=TRUE),LA$Accommodates)
@@ -35,41 +33,33 @@ LA$Maximum_nights <-ifelse(is.na(LA$Maximum_nights), median(LA$Maximum_nights,na
 
 #drop some NA
 LA<- LA %>% drop_na(Neighbourhood_cleansed)
-LA<- LA %>% drop_na(latitude)
-
-# Write function that identifies sparse categories and aggregates into "other"
-
-combineRare <- function(data_frame,mincount){ #mincount is threshold below which we consider it "rare"
-  for (i in 1:ncol(data_frame)){
-    a <- data_frame[,i] #go through column by column
-    replace <- names(which(table(a) < mincount)) #creating table to find those below mincount
-    levels(a)[levels(a) %in% replace] <- paste("Other",colnames(data_frame)[i],sep=".")
-    data_frame[,i] <- a 
-  } # main for loop
-  return(data_frame)
-} #combineRare 
-
-
-#apply the function
-LA <- combineRare(LA,10)
 
 #Create new variables
 LA$Is_Apartment <- as.factor(ifelse(LA$Property_type=="Apartment",1,0))
 LA$Is_House <- as.factor(ifelse(LA$Property_type=="House",1,0))
+LA$condo <- as.factor(ifelse(LA$Property_type=="Condominium",1,0)) 
+LA$Townhouse <- as.factor(ifelse(LA$Property_type=="Townhouse",1,0)) 
+LA$Loft<- as.factor(ifelse(LA$Property_type=="Loft",1,0)) 
+LA$Guesthouse<- as.factor(ifelse(LA$Property_type=="Guesthouse",1,0)) 
+LA$entirehouse <- as.factor(ifelse(LA$Room_type=="Entire home/apt",1,0)) 
+LA$privateroom <- as.factor(ifelse(LA$Room_type=="Private room",1,0)) 
+LA$sharedroom <- as.factor(ifelse(LA$Room_type=="Shared room",1,0))
 LA$Hollywood_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Hollywood",1,0)) 
 LA$Venice_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Venice",1,0)) 
 LA$LongBeach_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Long Beach",1,0)) 
 LA$Downtown_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Downtown",1,0)) 
 LA$SantaMonica_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Santa Monica",1,0)) 
-LA$entirehouse <- as.factor(ifelse(LA$Room_type=="Entire home/apt",1,0)) 
-LA$privateroom <- as.factor(ifelse(LA$Room_type=="Private room",1,0)) 
 LA$Recent_Review <-as.factor(ifelse(is.na(LA$Last_Review_Date),as.Date("2020-12-31")-as.Date("2017-04-30"),as.Date("2020-12-31")-LA$Last_Review_Date))
-#use the median of the last_review date(2017-04-30)
 
-summary(LA)
+summary(LA) 
 
-LA_sample<-LA[,c("Host_Response_Rate","Host_Is_Superhost","Host_total_listings_count","Accommodates","Bathrooms","Bedrooms","Price","Minimum_nights","Availability_365",
+#create a subset for modeling
+LA_sample<-LA[,c("Host_Response_Rate","Host_Is_Superhost","Host_total_listings_count","Accommodates","Bathrooms","Bedrooms","Price","Minimum_nights","Maximum_nights","Availability_365",
                    "Number_of_reviews","Review_Scores_Rating","Review_Scores_Accuracy",
                    "Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location",
-                   "Review_Scores_Value","Reviews_per_month","Is_Apartment","Is_House","Hollywood_Neighbourhood","Venice_Neighbourhood","LongBeach_Neighbourhood","Downtown_Neighbourhood","SantaMonica_Neighbourhood","entirehouse","privateroom","Recent_Review")]
+                   "Review_Scores_Value","Reviews_per_month","Is_Apartment","Is_House","condo","Townhouse","Loft","Guesthouse",
+                 "Hollywood_Neighbourhood","Venice_Neighbourhood","LongBeach_Neighbourhood","Downtown_Neighbourhood","SantaMonica_Neighbourhood",
+                 "entirehouse","privateroom","sharedroom","Recent_Review")]
 
+summary(LA_sample) 
+#totally 34 variables
