@@ -1,0 +1,93 @@
+library(dplyr)
+library(lubridate)
+library(psych)
+install.packages("caret")
+library(caret)
+LA_listings<-read.csv("LA_Listings.csv")
+#Reviews<-read.csv2("airbnb-reviews.csv")
+#install.packages("data.table")
+#library(data.table)
+#Reviews <- fread("airbnb-reviews.csv")
+#colnames(LA_listings)[1]<-"listing_id"
+#LA<-merge(LA_listings,Reviews,by="listing_id")
+head(LA_listings)
+tail(LA_listings)
+str(LA_listings)
+describe(LA_listings)
+summary(LA_listings)
+#Factor
+LA_listings$Property.type<-as.factor(LA_listings$Property.type)
+LA_listings$Room.type<-as.factor(LA_listings$Room.type)
+LA_listings$Host.Is.Superhost<-as.factor(LA_listings$Host.Is.Superhost)
+LA_listings$Neighbourhood.cleansed<-as.factor(LA_listings$Neighbourhood.cleansed)
+
+
+#Date
+LA_listings$Last.Review.Date<-mdy(LA_listings$Last.Review.Date)
+
+#Top five neighborhood and others
+Neighbourhood<-LA_listings %>% group_by(LA_listings$Neighbourhood.cleansed) %>% tally(sort = T)
+head(Neighbourhood)
+LA_listings$Neighbourhood.cleansed<-as.character(LA_listings$Neighbourhood.cleansed)
+
+
+
+
+# for (i in 1:nrow(LA_try)){
+#   need=c("Hollywood","Venice","Long Beach","Downtown","Santa Monica","Hollywood Hills")
+#   a<-LA_try[i,"Neighbourhood.cleansed"]
+#   if (!(a %in% need)){
+#     LA_try[i,LA_try$Neighbourhood.cleansed]<-"Others"
+#   }}
+
+LA_listings$Hollywood<-as.factor(ifelse(LA_listings$Neighbourhood.cleansed=="Hollywood",1,0))
+LA_listings$Venice<-as.factor(ifelse(LA_listings$Neighbourhood.cleansed=="Venice",1,0))
+LA_listings$Long_Beach<-as.factor(ifelse(LA_listings$Neighbourhood.cleansed=="Long Beach",1,0))
+LA_listings$Downtown<-as.factor(ifelse(LA_listings$Neighbourhood.cleansed=="Downtown",1,0))
+LA_listings$Santa_Monica<-as.factor(ifelse(LA_listings$Neighbourhood.cleansed=="Santa Monica",1,0))
+
+
+#Property_type top 5
+Property<-LA_listings %>% group_by(LA_listings$Property.type) %>% tally(sort = T)
+
+#superhost
+LA_listings$Superhost<-as.factor(ifelse(LA_listings$Host.Is.Superhost=="TRUE",1,0))
+
+#Dummy
+
+dmy <- dummyVars(" ~Property.type+Room.type", data = LA_listings)
+trsf <- data.frame(predict(dmy, newdata = LA_listings))
+trsf
+colnames(trsf)
+trsf<-trsf[,c("Property.type.Apartment","Property.type.House","Property.type.Condominium","Property.type.Townhouse"
+              ,"Property.type.Loft","Room.type.Entire.home.apt","Room.type.Hotel.room","Room.type.Private.room",
+              "Room.type.Shared.room")]
+
+#pick relatively related variables for rating prediction
+colnames(LA_listings)
+LA<-LA_listings[,c("Host.Response.Rate","Superhost","Host.total.listings.count","Accommodates","Bathrooms","Bedrooms","Price","Minimum.nights","Maximum.nights","Availability.365",
+                   "Number.of.reviews","Last.Review.Date","Review.Scores.Rating","Review.Scores.Accuracy",
+                   "Review.Scores.Cleanliness","Review.Scores.Checkin","Review.Scores.Communication","Review.Scores.Location",
+                   "Review.Scores.Value","Reviews.per.month","Hollywood","Venice","Long_Beach",
+                   "Downtown","Santa_Monica")]
+
+LA<-cbind(LA,trsf)
+head(LA)
+summary(LA)
+
+
+#transfer NA into mean/mode of the variables
+summary(LA)
+LA$Host.Response.Rate <- ifelse(is.na(LA$Host.Response.Rate), mean(LA$Host.Response.Rate,na.rm=TRUE),LA$Host.Response.Rate)
+LA$Host.total.listings.count <- ifelse(is.na(LA$Host.total.listings.count), median(LA$Host.total.listings.count,na.rm=TRUE),LA$Host.total.listings.count)
+LA$Accommodates <-ifelse(is.na(LA$Accommodates), median(LA$Accommodates,na.rm=TRUE),LA$Accommodates)
+LA$Bathrooms <-ifelse(is.na(LA$Bathrooms), median(LA$Bathrooms,na.rm=TRUE),LA$Bathrooms)
+LA$Bedrooms <-ifelse(is.na(LA$Bedrooms), median(LA$Bedrooms,na.rm=TRUE),LA$Bedrooms)
+LA$Minimum.nights <-ifelse(is.na(LA$Minimum.nights), median(LA$Minimum.nights,na.rm=TRUE),LA$Minimum.nights)
+LA$Maximum.nights <-ifelse(is.na(LA$Maximum.nights), median(LA$Maximum.nights,na.rm=TRUE),LA$Maximum.nights)
+
+#recent date
+LA$Recent_Review <-as.factor(ifelse(is.na(LA$Last.Review.Date),as.Date("2020-12-31")-as.Date("2017-04-30"),as.Date("2020-12-31")-LA$Last.Review.Date))
+#get rid of last review date
+LA<-select(LA,-Last.Review.Date)
+
