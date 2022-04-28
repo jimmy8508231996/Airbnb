@@ -32,7 +32,7 @@ LA$Accommodates <-ifelse(is.na(LA$Accommodates), median(LA$Accommodates,na.rm=TR
 LA$Bathrooms <-ifelse(is.na(LA$Bathrooms), median(LA$Bathrooms,na.rm=TRUE),LA$Bathrooms)
 LA$Bedrooms <-ifelse(is.na(LA$Bedrooms), median(LA$Bedrooms,na.rm=TRUE),LA$Bedrooms)
 LA$Maximum_nights <-ifelse(is.na(LA$Maximum_nights), median(LA$Maximum_nights,na.rm=TRUE),LA$Maximum_nights)
-LA$Last_Review_Date <-ifelse(is.na(LA$Last_Review_Date), median(LA$Maximum_nights,na.rm=TRUE),LA$Maximum_nights)
+
 #drop some NA
 LA<- LA %>% drop_na(Neighbourhood_cleansed)
 LA<- LA %>% drop_na(latitude)
