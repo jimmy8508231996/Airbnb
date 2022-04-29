@@ -1,0 +1,13 @@
+Amenities<-data.frame(LA_listings$Amenities)
+colnames(Amenities)
+#number of columns after splitting by space
+
+Amenities_2<-data.frame(do.call("rbind", strsplit(as.character(Amenities$LA_listings.Amenities), ";", fixed = TRUE)))
+
+Amenities_3<-Amenities_2 %>% gather(col,amenities,X1:X45,na.rm = T)
+Amenities_3$amenities<-tolower(Amenities_3$amenities)
+head(Amenities_all)
+
+Amenities_3 %>% count(amenities)
+Amenities_all<-Amenities_all[order(-Amenities_all$n),]
+head(Amenities_all)
