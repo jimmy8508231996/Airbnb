@@ -2,7 +2,7 @@ library(readr)
 library(dplyr)
 library(lubridate)
 library(tidyverse)
-LA <- read_csv("LA_Listings.csv")
+LA <- read.csv("LA_Listings.csv")
 summary(LA)
 
 #transfer variables to factors
