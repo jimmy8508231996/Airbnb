@@ -53,13 +53,32 @@ LA$Recent_Review <-as.factor(ifelse(is.na(LA$Last_Review_Date),as.Date("2020-12-
 
 summary(LA) 
 
+#number of columns after splitting by space, find top5 amenities
+Amenities<-data.frame(LA$Amenities)
+colnames(Amenities)
+install.packages('splitstackshape')
+library(splitstackshape)
+Amenities_2<-cSplit(Amenities, "LA.Amenities", ";")
+colnames(Amenities_2)
+Amenities_3<-Amenities_2 %>% gather(col,amenities,LA.Amenities_01:LA.Amenities_45,na.rm = T)
+Amenities_3$amenities<-tolower(Amenities_3$amenities)
+Amenities_3<-Amenities_3 %>% count(amenities)
+Amenities_3<-Amenities_3[order(Amenities_3$n,decreasing = T),]
+head(Amenities_3)
+
+#find wireless internet, kitchen, heating, essentials,smoke detector in the LA dataset amenities
+Amenities_list = c("wireless internet", "kitchen", "heating", "essentials", "smoke detector")
+for (i in 1:length(Amenities_list)){
+  LA[Amenities_list[i]]<-as.factor(ifelse(grepl(Amenities_list[i],LA$Amenities,ignore.case = TRUE),1,0))
+}
+head(LA)
 #create a subset for modeling
 LA_sample<-LA[,c("Host_Response_Rate","Host_Is_Superhost","Host_total_listings_count","Accommodates","Bathrooms","Bedrooms","Price","Minimum_nights","Maximum_nights","Availability_365",
-                   "Number_of_reviews","Review_Scores_Rating","Review_Scores_Accuracy",
-                   "Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location",
-                   "Review_Scores_Value","Reviews_per_month","Is_Apartment","Is_House","condo","Townhouse","Loft","Guesthouse",
+                 "Number_of_reviews","Review_Scores_Rating","Review_Scores_Accuracy",
+                 "Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location",
+                 "Review_Scores_Value","Reviews_per_month","Is_Apartment","Is_House","condo","Townhouse","Loft","Guesthouse",
                  "Hollywood_Neighbourhood","Venice_Neighbourhood","LongBeach_Neighbourhood","Downtown_Neighbourhood","SantaMonica_Neighbourhood",
-                 "entirehouse","privateroom","sharedroom","Recent_Review")]
+                 "entirehouse","privateroom","sharedroom","Recent_Review","wireless internet","kitchen","heating","essentials","smoke detector")]
 
 summary(LA_sample) 
-#totally 34 variables
+#totally 39 variables
