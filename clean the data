@@ -92,9 +92,15 @@ test <- LA_sample[-train_ind,]
 prop.table(table(LA_sample$Review_Scores_Rating))
 prop.table(table(training$Review_Scores_Rating))
 prop.table(table(test$Review_Scores_Rating))
-#see correlation
+
+#see correlation and check collinearity
 colnames(training)
 summary(training)
 training_t<-training
 training_t[] <- lapply(training_t, as.numeric)
 correlation<-data.frame(cor(training_t))
+
+#delete review "Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location" and entire_house
+training<-training[,-which(names(training) %in% c("Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse"))]
+test<-test[,-which(names(test) %in% c("Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse"))]
+
