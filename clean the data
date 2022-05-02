@@ -66,8 +66,8 @@ Amenities_3<-Amenities_3 %>% count(amenities)
 Amenities_3<-Amenities_3[order(Amenities_3$n,decreasing = T),]
 head(Amenities_3)
 
-#find wireless internet, kitchen, heating, essentials,smoke detector in the LA dataset amenities
-Amenities_list = c("wireless internet", "kitchen", "heating", "essentials", "smoke detector")
+#find "24-hour check-in", "indoor fireplace", "lock on bedroom door", "pool", "elevator in building" in the LA dataset amenities
+Amenities_list = c("24-hour check-in", "indoor fireplace", "lock on bedroom door", "pool", "elevator in building")
 for (i in 1:length(Amenities_list)){
   LA[Amenities_list[i]]<-as.factor(ifelse(grepl(Amenities_list[i],LA$Amenities,ignore.case = TRUE),1,0))
 }
@@ -78,7 +78,23 @@ LA_sample<-LA[,c("Host_Response_Rate","Host_Is_Superhost","Host_total_listings_c
                  "Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location",
                  "Review_Scores_Value","Reviews_per_month","Is_Apartment","Is_House","condo","Townhouse","Loft","Guesthouse",
                  "Hollywood_Neighbourhood","Venice_Neighbourhood","LongBeach_Neighbourhood","Downtown_Neighbourhood","SantaMonica_Neighbourhood",
-                 "entirehouse","privateroom","sharedroom","Recent_Review","wireless internet","kitchen","heating","essentials","smoke detector")]
+                 "entirehouse","privateroom","sharedroom","Recent_Review","24-hour check-in", "indoor fireplace", "lock on bedroom door", "pool", "elevator in building")]
 
 summary(LA_sample) 
 #totally 39 variables
+
+#Set training and testing dataset
+
+set.seed(13343)
+train_ind <- createDataPartition(y = LA_sample$Review_Scores_Rating,p=.8,list = FALSE)
+training <- LA_sample[train_ind,]
+test <- LA_sample[-train_ind,]
+prop.table(table(LA_sample$Review_Scores_Rating))
+prop.table(table(training$Review_Scores_Rating))
+prop.table(table(test$Review_Scores_Rating))
+#see correlation
+colnames(training)
+summary(training)
+training_t<-training
+training_t[] <- lapply(training_t, as.numeric)
+correlation<-data.frame(cor(training_t))
