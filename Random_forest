@@ -1,0 +1,31 @@
+#random forests
+library(randomForest)
+
+rffit <- randomForest(review_scores_rating ~ review_scores_value + recent_review + venice_neighbourhood + accommodates+
+                        x24_hour_check_in+availability_365+host_total_listings_count+number_of_reviews+
+                        maximum_nights+sharedroom+santa_monica_neighbourhood+is_house+is_apartment+
+                        loft+hollywood_neighbourhood+indoor_fireplace+host_response_rate+
+                        condo+price+townhouse+privateroom+guesthouse+bedrooms, data = training, importance = TRUE, na.action=na.omit, ntree = 50)
+plot(rffit)
+print(rffit)
+varImpPlot(rffit)
+#predict on the training data for training dataset
+predict_train_rf=predict(rffit, training)
+
+
+#R square, MAE, MSE, RMSE
+R2(predict_train_rf,training$review_scores_rating,form="traditional")
+MAE(predict_train_rf,training$review_scores_rating)
+MSE(predict_train_rf,training$review_scores_rating)
+RMSE(predict_train_rf,training$review_scores_rating)
+
+
+
+#check testing data
+predict_test_rf=predict(rffit, test)
+
+#R square, MAE, MSE, RMSE
+R2(predict_test_rf,test$review_scores_rating,form="traditional")
+MAE(predict_test_rf,test$review_scores_rating)
+MSE(predict_test_rf,test$review_scores_rating)
+RMSE(predict_test_rf,test$review_scores_rating)
