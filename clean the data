@@ -104,8 +104,22 @@ correlation<-data.frame(cor(training_t))
 training<-training[,-which(names(training) %in% c("Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse"))]
 test<-test[,-which(names(test) %in% c("Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse"))]
 
-#final training dataset with 23 variables
-training<-training[,c(13,28,22,4,29,10,3,11,9,27,25,16,15,19,21,30,1,17,7,18,26,20,6 )]
-#deal with column name with blank and which starting with number
+#variable selection using Forward-stepwise regression
+library(lars)
+y = training$Review_Scores_Rating
+x = training[,-which(names(training)%in%"Review_Scores_Rating")]
+typeof(x)
+summary(x_t)
+x_t<-as.matrix(x)
+res = lars(x_t, y, type="stepwise")
+print(summary(res))
+res
+#cp=1.8011e+01 23 variables included, which are Review_Scores_Value, Recent_Review, Venice_Neighbourhood, Accommodates,
+#24-hour check-in, Availability_365, Host_total_listings_count, Number_of_reviews, Minimum_nights, sharedroom, 
+#SantaMonica_Neighbourhood, Is_House Is_Apartment, Loft, Hollywood_Neighbourhood, indoor fireplace, Host_Response_Rate, condo, Price, 
+#Townhouse, privateroom, Guesthouse, Bedrooms
+#add Review_Scores_Rating also, 24 variables in totall
+
+colnames(training)
+training<-training[,c(12,13,28,22,4,29,10,3,11,9,27,25,16,15,19,21,30,1,17,7,18,26,20,6)]
 training<-training %>% clean_names()
-test<-test %>% clean_names()
