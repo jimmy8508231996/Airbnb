@@ -104,3 +104,5 @@ correlation<-data.frame(cor(training_t))
 training<-training[,-which(names(training) %in% c("Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse"))]
 test<-test[,-which(names(test) %in% c("Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse"))]
 
+#final training dataset with 23 variables
+training<-training[,c(13,28,22,4,29,10,3,11,9,27,25,16,15,19,21,30,1,17,7,18,26,20,6 )]
