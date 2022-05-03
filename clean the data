@@ -123,3 +123,4 @@ res
 colnames(training)
 training<-training[,c(12,13,28,22,4,29,10,3,11,9,27,25,16,15,19,21,30,1,17,7,18,26,20,6)]
 training<-training %>% clean_names()
+test<-test %>% clean_names()
