@@ -21,7 +21,7 @@ LA$Last_Review_Date <-mdy(LA$Last_Review_Date)
 summary(LA)
 
 #Dummy coded
-LA$Host_Is_Superhost <- as.factor(ifelse(LA$Host_Is_Superhost == "TRUE", 1,0)) 
+LA$Host_Is_Superhost <- ifelse(LA$Host_Is_Superhost == "TRUE", 1,0)
 
 #transfer NA into mean/median of the variables
 LA$Host_Response_Rate <- ifelse(is.na(LA$Host_Response_Rate), mean(LA$Host_Response_Rate,na.rm=TRUE),LA$Host_Response_Rate)
