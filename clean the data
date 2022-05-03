@@ -35,21 +35,21 @@ LA$Maximum_nights <-ifelse(is.na(LA$Maximum_nights), median(LA$Maximum_nights,na
 LA<- LA %>% drop_na(Neighbourhood_cleansed)
 
 #Create new variables
-LA$Is_Apartment <- as.factor(ifelse(LA$Property_type=="Apartment",1,0))
-LA$Is_House <- as.factor(ifelse(LA$Property_type=="House",1,0))
-LA$condo <- as.factor(ifelse(LA$Property_type=="Condominium",1,0)) 
-LA$Townhouse <- as.factor(ifelse(LA$Property_type=="Townhouse",1,0)) 
-LA$Loft<- as.factor(ifelse(LA$Property_type=="Loft",1,0)) 
-LA$Guesthouse<- as.factor(ifelse(LA$Property_type=="Guesthouse",1,0)) 
-LA$entirehouse <- as.factor(ifelse(LA$Room_type=="Entire home/apt",1,0)) 
-LA$privateroom <- as.factor(ifelse(LA$Room_type=="Private room",1,0)) 
-LA$sharedroom <- as.factor(ifelse(LA$Room_type=="Shared room",1,0))
-LA$Hollywood_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Hollywood",1,0)) 
-LA$Venice_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Venice",1,0)) 
-LA$LongBeach_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Long Beach",1,0)) 
-LA$Downtown_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Downtown",1,0)) 
-LA$SantaMonica_Neighbourhood <- as.factor(ifelse(LA$Neighbourhood_cleansed=="Santa Monica",1,0)) 
-LA$Recent_Review <-as.factor(ifelse(is.na(LA$Last_Review_Date),as.Date("2020-12-31")-as.Date("2017-04-30"),as.Date("2020-12-31")-LA$Last_Review_Date))
+LA$Is_Apartment <- ifelse(LA$Property_type=="Apartment",1,0)
+LA$Is_House <- ifelse(LA$Property_type=="House",1,0)
+LA$condo <- ifelse(LA$Property_type=="Condominium",1,0)
+LA$Townhouse <- ifelse(LA$Property_type=="Townhouse",1,0)
+LA$Loft<- ifelse(LA$Property_type=="Loft",1,0)
+LA$Guesthouse<- ifelse(LA$Property_type=="Guesthouse",1,0) 
+LA$entirehouse <- ifelse(LA$Room_type=="Entire home/apt",1,0)
+LA$privateroom <- ifelse(LA$Room_type=="Private room",1,0) 
+LA$sharedroom <- ifelse(LA$Room_type=="Shared room",1,0)
+LA$Hollywood_Neighbourhood <- ifelse(LA$Neighbourhood_cleansed=="Hollywood",1,0) 
+LA$Venice_Neighbourhood <- ifelse(LA$Neighbourhood_cleansed=="Venice",1,0) 
+LA$LongBeach_Neighbourhood <- ifelse(LA$Neighbourhood_cleansed=="Long Beach",1,0) 
+LA$Downtown_Neighbourhood <- ifelse(LA$Neighbourhood_cleansed=="Downtown",1,0) 
+LA$SantaMonica_Neighbourhood <- ifelse(LA$Neighbourhood_cleansed=="Santa Monica",1,0) 
+LA$Recent_Review <-ifelse(is.na(LA$Last_Review_Date),as.Date("2020-12-31")-as.Date("2017-04-30"),as.Date("2020-12-31")-LA$Last_Review_Date)
 
 summary(LA) 
 
@@ -69,7 +69,7 @@ head(Amenities_3)
 #find "24-hour check-in", "indoor fireplace", "lock on bedroom door", "pool", "elevator in building" in the LA dataset amenities
 Amenities_list = c("24-hour check-in", "indoor fireplace", "lock on bedroom door", "pool", "elevator in building")
 for (i in 1:length(Amenities_list)){
-  LA[Amenities_list[i]]<-as.factor(ifelse(grepl(Amenities_list[i],LA$Amenities,ignore.case = TRUE),1,0))
+  LA[Amenities_list[i]]<-ifelse(grepl(Amenities_list[i],LA$Amenities,ignore.case = TRUE),1,0)
 }
 head(LA)
 #create a subset for modeling
