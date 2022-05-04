@@ -85,6 +85,8 @@ summary(LA_sample)
 
 #Set training and testing dataset
 
+#Set training and testing dataset
+
 set.seed(13343)
 train_ind <- createDataPartition(y = LA_sample$Review_Scores_Rating,p=.8,list = FALSE)
 training <- LA_sample[train_ind,]
@@ -100,27 +102,27 @@ training_t<-training
 training_t[] <- lapply(training_t, as.numeric)
 correlation<-data.frame(cor(training_t))
 
-#delete review "Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location" and entire_house
-training<-training[,-which(names(training) %in% c("Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse"))]
+#delete review "Review_Scores_Value","Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location" and entire_house
+training<-training[,-which(names(training) %in% c("Review_Scores_Value","Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse"))]
 test<-test[,-which(names(test) %in% c("Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse"))]
-
+training<-training %>% clean_names()
+test<-test %>% clean_names()
+colnames(training)
 #variable selection using Forward-stepwise regression
 library(lars)
-y = training$Review_Scores_Rating
-x = training[,-which(names(training)%in%"Review_Scores_Rating")]
-typeof(x)
-summary(x_t)
+y = training$review_scores_rating
+x = training[,-which(names(training)%in%"review_scores_rating")]
 x_t<-as.matrix(x)
 res = lars(x_t, y, type="stepwise")
 print(summary(res))
 res
-#cp=1.8011e+01 23 variables included, which are Review_Scores_Value, Recent_Review, Venice_Neighbourhood, Accommodates,
-#24-hour check-in, Availability_365, Host_total_listings_count, Number_of_reviews, Minimum_nights, sharedroom, 
-#SantaMonica_Neighbourhood, Is_House Is_Apartment, Loft, Hollywood_Neighbourhood, indoor fireplace, Host_Response_Rate, condo, Price, 
-#Townhouse, privateroom, Guesthouse, Bedrooms
-#add Review_Scores_Rating also, 24 variables in totall
+#cp=28.646 28 variables included, which are recent_review, reviews_per_month, x24_hour_check_in, 
+#host_is_superhost, is_apartment, is_house, host_response_rate, availability_365, minimum_nights,
+#price, indoor_fireplace, condo, accommodates, host_total_listings_count, venice_neighbourhood,
+#townhouse, loft, guesthouse, sharedroom, bathrooms, lock_on_bedroom_door, privateroom, 
+#santa_monica_neighbourhood, bedrooms, elevator_in_building, long_beach_neighbourhood, maximum_nights,
+#number_of_reviews
+#add review_scores_rating also. total 29 variables
 
 colnames(training)
-training<-training[,c(12,13,28,22,4,29,10,3,11,9,27,25,16,15,19,21,30,1,17,7,18,26,20,6)]
-training<-training %>% clean_names()
-test<-test %>% clean_names()
+training<-training[,c(12,27,13,28,2,14,15,1,10,8,7,29,16,4,3,21,17,18,19,26,5,30,25,24,6,32,22,9,11)]
