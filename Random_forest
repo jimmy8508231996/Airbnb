@@ -1,11 +1,12 @@
 #random forests
+
 library(randomForest)
 
-rffit <- randomForest(review_scores_rating ~ review_scores_value + recent_review + venice_neighbourhood + accommodates+
-                        x24_hour_check_in+availability_365+host_total_listings_count+number_of_reviews+
-                        maximum_nights+sharedroom+santa_monica_neighbourhood+is_house+is_apartment+
-                        loft+hollywood_neighbourhood+indoor_fireplace+host_response_rate+
-                        condo+price+townhouse+privateroom+guesthouse+bedrooms, data = training, importance = TRUE, na.action=na.omit, ntree = 50)
+rffit <- randomForest(review_scores_rating ~ recent_review+reviews_per_month+x24_hour_check_in+host_is_superhost
+                      +is_apartment+is_house+host_response_rate+availability_365+minimum_nights+price+indoor_fireplace
+                      +condo+accommodates+host_total_listings_count+venice_neighbourhood+townhouse+loft+guesthouse+
+                        sharedroom+bathrooms+lock_on_bedroom_door+privateroom+santa_monica_neighbourhood+bedrooms
+                      +elevator_in_building+long_beach_neighbourhood+maximum_nights+number_of_reviews, data = training, importance = TRUE, na.action=na.omit, ntree = 50)
 plot(rffit)
 print(rffit)
 varImpPlot(rffit)
