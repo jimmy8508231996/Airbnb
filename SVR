@@ -1,0 +1,61 @@
+set.seed(13343)
+train_ind <- createDataPartition(y = LA_sample$Review_Scores_Rating,p=.8,list = FALSE)
+training <- LA_sample[train_ind,]
+test <- LA_sample[-train_ind,]
+
+
+#see correlation and check collinearity
+colnames(training)
+summary(training)
+training_t<-training
+training_t[] <- lapply(training_t, as.numeric)
+correlation<-data.frame(cor(training_t))
+
+
+#delete review "Review_Scores_Value","Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location" and entire_house
+training<- training[,-which(names(training) %in% c("Review_Scores_Value","Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse","Reviews_per_month","Number_of_reviews","reviews_per_month","recent_review"))]
+test<-test[,-which(names(test) %in% c("Review_Scores_Value","Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse","Reviews_per_month", "Number_of_reviews","recent_review","reviews_per_month"))]
+training<-training %>% clean_names()
+test<-test %>% clean_names()
+colnames(training)
+
+training<- training[,-which(names(training) %in% c("Review_Scores_Value","Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse","Reviews_per_month","Number_of_reviews","reviews_per_month","recent_review"))]
+test<-test[,-which(names(test) %in% c("Review_Scores_Value","Review_Scores_Accuracy","Review_Scores_Cleanliness","Review_Scores_Checkin","Review_Scores_Communication","Review_Scores_Location","entirehouse","Reviews_per_month", "Number_of_reviews","recent_review","reviews_per_month"))]
+training<-training %>% clean_names()
+test<-test %>% clean_names()
+colnames(training)
+
+
+#variable selection using Forward-stepwise regression
+library(lars)
+y = training$review_scores_rating
+x = training[,-which(names(training)%in%"review_scores_rating")]
+x_t<-as.matrix(x)
+res = lars(x_t, y, type="stepwise")
+print(summary(res))
+res
+
+
+training<-training[,c("x24_hour_check_in","host_is_superhost", "is_apartment", "is_house", "accommodates","host_response_rate","lock_on_bedroom_door", "condo", "minimum_nights", "availability_365", "townhouse", "loft", "guesthouse", "indoor_fireplace",
+                                           "price", "venice_neighbourhood", "elevator_in_building", "host_total_listings_count", "bedrooms","santa_monica_neighbourhood", "pool", "maximum_nights", "privateroom", "long_beach_neighbourhood","hollywood_neighbourhood","review_scores_rating")]
+
+test <- test[,c("x24_hour_check_in","host_is_superhost", "is_apartment", "is_house", "accommodates","host_response_rate","lock_on_bedroom_door", "condo", "minimum_nights", "availability_365", "townhouse", "loft", "guesthouse", "indoor_fireplace",
+                "price", "venice_neighbourhood", "elevator_in_building", "host_total_listings_count", "bedrooms","santa_monica_neighbourhood", "pool", "maximum_nights", "privateroom", "long_beach_neighbourhood","hollywood_neighbourhood","review_scores_rating")]
+
+
+
+#SVM
+library(e1071)
+res_svm = svm(training, training$review_scores_rating, kernel = "linear")
+pred_svm= predict(res_svm, training)
+#predict vs. true
+cbind(as.numeric(pred_svm)-1, training$review_scores_rating)
+
+install.packages("mltools")
+library("mltools")
+R2(pred_svm,training$review_scores_rating,form="traditional")
+MAE(pred_svm,training$review_scores_rating)
+mltools::mse(pred_svm,training$review_scores_rating)
+RMSE(pred_svm,training$review_scores_rating)
+
+#R2:0.9907498 #MAE:4.391031 #MSE:19.49376 #RMSE:4.415174
